@@ -2,6 +2,8 @@
 
 A small CLI for [Orca](https://github.com/stablyai/orca) that adds a project in one command. It registers the folder if Orca doesn't know it yet, puts it in the project group you pick, and focuses it.
 
+[Orca](https://github.com/stablyai/orca) ([stablyai/orca](https://github.com/stablyai/orca)) is a desktop app for running a fleet of parallel coding agents across your projects and worktrees. orcaadd is an unofficial helper built on its `orca` CLI.
+
 ```
 $ orcaadd ~/Projects/my-app
 Select a group for /Users/me/Projects/my-app (↑/↓, Enter to confirm, q to cancel):
