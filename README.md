@@ -45,7 +45,7 @@ Picker keys: `↑`/`↓` or `j`/`k` to move, `Enter` to confirm, `q` to cancel.
 ## Install
 
 ```sh
-git clone git@github.com:BrOrlandi/orcaadd.git ~/Projects/orcaadd
+git clone https://github.com/BrOrlandi/orcaadd.git ~/Projects/orcaadd
 sudo ln -s ~/Projects/orcaadd/orcaadd.sh /usr/local/bin/orcaadd
 ```
 
