@@ -1,0 +1,27 @@
+{
+  "manifestVersion": 1,
+  "commitConvention": "conventional",
+  "bump": { "policy": "conventional-commits", "cadence": "per-release", "confirm": true },
+  "apps": [
+    {
+      "id": "orcaadd",
+      "label": "orcaadd CLI",
+      "kind": "cli",
+      "version": {
+        "anchor": "tag",
+        "tagPrefix": "v",
+        "annotatedTag": true,
+        "files": [
+          { "path": "orcaadd.sh", "format": "regex", "pattern": "^VERSION=\"([^\"]+)\"", "kind": "semver" }
+        ]
+      },
+      "changelogs": [
+        { "path": "CHANGELOG.md", "format": "keep-a-changelog", "audience": "public", "language": "en", "detail": "full", "dateFormat": "YYYY-MM-DD" }
+      ],
+      "publish": [
+        { "channel": "git-tag" },
+        { "channel": "github-release", "notesFrom": "CHANGELOG.md", "latest": true }
+      ]
+    }
+  ]
+}

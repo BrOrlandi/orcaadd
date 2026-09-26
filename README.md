@@ -18,7 +18,7 @@ Group: My Projects
 ## What it does
 
 1. Resolves the project root. It uses the path you pass, or the current directory, and the git root when the folder is inside a repo.
-2. If the project is already in Orca, it prints `Already in Orca: <path> (<group>)`. Otherwise it adds it with `orca repo add`.
+2. If the project is already in Orca, it prints `Already in Orca: <path> (<group>)`. Otherwise it adds it, as a git project when it is a repo and as a plain folder when it is not.
 3. Picks the group. Without `--group` it shows a radio-button picker. The group whose folder contains the project comes preselected.
 4. Focuses the project. It switches to a terminal that is already open there, or opens a new one, and brings Orca to the front.
 
@@ -35,6 +35,7 @@ orcaadd [path] [-g|--group <name|id>]
 | `orcaadd -g work` | Group by name (case-insensitive) or id, no picker |
 | `orcaadd -g none` | No group |
 | `orcaadd -g homelab` on an existing project | Moves it to that group |
+| `orcaadd --version` | Prints the version |
 
 Picker keys: `↑`/`↓` or `j`/`k` to move, `Enter` to confirm, `q` to cancel.
 

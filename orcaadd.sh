@@ -5,13 +5,15 @@
 #   path          Project folder (default: current directory; git root is used when inside a repo)
 #   -g, --group   Group to add the project to. Omit to pick interactively.
 #                 Use "none" for no group. On an already registered project, moves it.
+#   -v, --version Print the version.
 set -euo pipefail
 
+VERSION="1.0.0"
 ORCA_APP="/Applications/Orca.app"
 ORCA_CLIENT="$ORCA_APP/Contents/Resources/app.asar.unpacked/out/cli/runtime-client.js"
 
 usage() {
-  sed -n '4,7p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '4,8p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 # Call an Orca runtime RPC method that the `orca` CLI does not expose (e.g. projectGroup.*)
@@ -69,6 +71,7 @@ while (($#)); do
   case $1 in
     -g | --group) group=${2:?Missing value for $1}; shift 2 ;;
     -h | --help) usage; exit 0 ;;
+    -v | --version) echo "orcaadd $VERSION"; exit 0 ;;
     -*) echo "Unknown option: $1" >&2; usage >&2; exit 1 ;;
     *) target=$1; shift ;;
   esac
@@ -79,7 +82,12 @@ if [[ ! -d $target ]]; then
   echo "Not a directory: $target" >&2
   exit 1
 fi
-root=$(git -C "$target" rev-parse --show-toplevel 2> /dev/null || (cd "$target" && pwd -P))
+if root=$(git -C "$target" rev-parse --show-toplevel 2> /dev/null); then
+  kind=git
+else
+  root=$(cd "$target" && pwd -P)
+  kind=folder
+fi
 
 groups_json=$(orca_rpc projectGroup.list | jq -c '[.result.groups[] | {id, name, parentPath}]')
 
@@ -119,9 +127,10 @@ else
     group_id=$(jq -r --argjson i "$choice" '.[$i].id // "none"' <<< "$groups_json")
   fi
 
-  add_json=$(orca repo add --path "$root" --json)
-  if ! jq -e '.ok' <<< "$add_json" > /dev/null; then
-    echo "Failed to add $root to Orca" >&2
+  # `orca repo add` has no --kind flag and assumes git, so plain folders go through the RPC
+  if ! add_json=$(orca_rpc repo.add "$(jq -nc --arg p "$root" --arg k "$kind" '{path: $p, kind: $k}')" 2>&1) \
+    || ! jq -e '.ok' <<< "$add_json" > /dev/null 2>&1; then
+    echo "Failed to add $root to Orca: $(jq -r '.error.message // empty' <<< "$add_json" 2> /dev/null || echo "$add_json")" >&2
     exit 1
   fi
   current_group=$(jq -r '.result.repo.projectGroupId // "none"' <<< "$add_json")
